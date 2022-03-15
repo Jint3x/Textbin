@@ -10,7 +10,7 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node --require ./tracing.js dist/main",
     "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "test": "jest",
@@ -24,8 +24,11 @@
   "license": "ISC",
   "dependencies": {
     "@nestjs/common": "^8.4.0",
+    "@nestjs/config": "^1.2.0",
     "@nestjs/core": "^8.4.0",
     "@nestjs/platform-express": "^8.4.0",
+    "@opentelemetry/api": "^1.0.4",
+    "@opentelemetry/sdk-node": "^0.27.0",
     "eslint": "^8.10.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -37,7 +40,9 @@
     "ts-loader": "^9.2.7",
     "ts-node": "^10.7.0",
     "tsconfig-paths": "^3.13.0",
-    "typescript": "^4.6.2"
+    "typescript": "^4.6.2",
+    "winston": "^3.6.0",
+    "winston-loggly-bulk": "^3.2.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.2.2",
