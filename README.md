@@ -13,6 +13,7 @@ emailed when they submit.
 * Deployment/Build - Docker
 * Observability - OpenTelemetry + [Backend??]
 * Cache - Redis 
+* Database - MongoDB
 * Code Linting - ??
 
 

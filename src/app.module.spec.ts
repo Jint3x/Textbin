@@ -1,7 +1,7 @@
-import { Test } from '@nestjs/testing';
-import { AppController } from './app.controller';
+import { Test } from "@nestjs/testing";
+import { AppController } from "./app.controller";
 
-describe('Tests EntryController', () => {
+describe("Tests EntryController", () => {
   let entryController: AppController;
 
   beforeEach(async () => {
@@ -12,9 +12,9 @@ describe('Tests EntryController', () => {
     entryController = moduleRef.get(AppController);
   });
 
-  it('Assures that the correct response has been returned', () => {
+  it("Assures that the correct response has been returned", () => {
     const response = entryController.data();
 
-    expect(response).toBe('Hey there!');
+    expect(response).toBe("Hey there!");
   });
 });
