@@ -7,14 +7,14 @@ emailed when they submit.
 ## Technologies
 * Language - Typescript [Runtime - Nodejs]
 * Framework - Nestjs 
-* API - REST + GraphQL
+* API - REST + GraphQL (?)
 * Testing - Jest
 * Queue - RabbitMQ 
 * Deployment/Build - Docker
 * Observability - OpenTelemetry + [Backend??]
 * Cache - Redis 
 * Database - MongoDB
-* Code Linting - ??
+* Code Linting - EsLint
 
 
 <br />
