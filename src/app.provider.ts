@@ -13,7 +13,7 @@ type LogType = "critical" | "error" | "warn" | "info" | "debug";
 
 @Injectable()
 export class LoggerProvider {
-  logger: Logger;
+  private logger: Logger;
 
   constructor() {
     this.logger = createLogger({
@@ -37,6 +37,8 @@ export class LoggerProvider {
     this.logger.log(type, args.join(separator), meta);
   }
 }
+
+export { LogType, MetaData }
 
 @Injectable()
 export class PostProvider {

@@ -1,19 +1,35 @@
-import { Test } from "@nestjs/testing";
 import { AppController } from "./app.controller";
+import { MetaData, LogType } from "./app.provider";
+import { Injectable } from "@nestjs/common";
 
-describe("Tests EntryController", () => {
-  let entryController: AppController;
+
+@Injectable()
+class LoggerProvider {
+  log(type: LogType, args: string[], meta: MetaData = {}, separator = " ") {
+    return { type, args, meta, separator }
+  }
+}
+
+@Injectable()
+class PostProvider {
+  async create() {
+    return "Object has been created"
+  }
+}
+
+
+describe("Tests AppController", () => {
+  let appController: AppController;
 
   beforeEach(async () => {
-    const moduleRef = await Test.createTestingModule({
-      controllers: [AppController],
-    }).compile();
-
-    entryController = moduleRef.get(AppController);
+      appController = new AppController(
+      new LoggerProvider() as any,
+      new PostProvider() as any
+    );
   });
 
   it("Assures that the correct response has been returned", () => {
-    const response = entryController.data();
+    const response = appController.data();
 
     expect(response).toBe("Hey there!");
   });
