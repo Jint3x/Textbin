@@ -1,9 +1,13 @@
 import { Controller, Get } from "@nestjs/common";
-import { LoggerProvider, PostProvider } from "./app.provider";
+import { LoggerProvider, PostProvider, QueueProvider } from "./app.provider";
 
 @Controller()
 export class AppController {
-  constructor(private logger: LoggerProvider, private database: PostProvider) {}
+  constructor(
+    private logger: LoggerProvider,
+    private database: PostProvider,
+    private queue: QueueProvider,
+  ) {}
 
   @Get("/")
   data() {

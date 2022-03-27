@@ -4,6 +4,7 @@ import { createLogger, Logger, format, transports } from "winston";
 import { Loggly } from "winston-loggly-bulk";
 import { Post, PostDocument } from "./schemas/Post.schema";
 import { Model } from "mongoose";
+import * as queue from "amqplib";
 
 interface MetaData {
   [key: string]: any;
@@ -38,8 +39,6 @@ export class LoggerProvider {
   }
 }
 
-export { LogType, MetaData };
-
 @Injectable()
 export class PostProvider {
   constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
@@ -53,3 +52,16 @@ export class PostProvider {
     testPost.save().catch((err) => console.log(err));
   }
 }
+
+@Injectable()
+export class QueueProvider {
+  queueServer: queue.Connection;
+
+  constructor() {
+    queue.connect(process.env.QUEUE_HOST).then((connection) => {
+      this.queueServer = connection;
+    });
+  }
+}
+
+export { LogType, MetaData };

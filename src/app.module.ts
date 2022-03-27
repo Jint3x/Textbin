@@ -2,7 +2,7 @@ import { CacheModule, Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AppController } from "./app.controller";
-import { LoggerProvider, PostProvider } from "./app.provider";
+import { LoggerProvider, PostProvider, QueueProvider } from "./app.provider";
 import { Post, PostSchema } from "./schemas/Post.schema";
 import type { RedisClientOptions } from "redis";
 import * as redisStore from "cache-manager-redis-store";
@@ -32,6 +32,6 @@ import * as redisStore from "cache-manager-redis-store";
       : CacheModule.register(),
   ],
   controllers: [AppController],
-  providers: [LoggerProvider, PostProvider],
+  providers: [LoggerProvider, PostProvider, QueueProvider],
 })
 export class App {}

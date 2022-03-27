@@ -16,6 +16,15 @@ class PostProvider {
   }
 }
 
+@Injectable()
+class QueueProvider {
+  queueServer: any;
+
+  constructor() {
+    this.queueServer = jest.fn(() => true);
+  }
+}
+
 describe("Tests AppController", () => {
   let appController: AppController;
 
@@ -23,6 +32,7 @@ describe("Tests AppController", () => {
     appController = new AppController(
       new LoggerProvider() as any,
       new PostProvider() as any,
+      new QueueProvider() as any,
     );
   });
 
