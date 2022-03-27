@@ -38,7 +38,7 @@ export class LoggerProvider {
   }
 }
 
-export { LogType, MetaData }
+export { LogType, MetaData };
 
 @Injectable()
 export class PostProvider {
