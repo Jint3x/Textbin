@@ -39,17 +39,57 @@ export class LoggerProvider {
   }
 }
 
+interface PostData_I {
+  _id: string;
+  header: string;
+  text: string;
+  tags: string[];
+}
+
 @Injectable()
 export class PostProvider {
-  constructor(@InjectModel(Post.name) private postModel: Model<PostDocument>) {}
+  constructor(
+    @InjectModel(Post.name) private postModel: Model<PostDocument>,
+    private logger: LoggerProvider,
+  ) {}
 
-  async create() {
-    const testPost = new this.postModel({
-      header: "Example Post",
-      text: "Some text",
-      submittedOn: new Date(),
+  async createPost(postData: PostData_I) {
+    const post = new this.postModel({
+      _id: postData._id,
+      header: postData.header,
+      text: postData.text,
+      tags: postData.tags,
+      submittedOn: new Date().toISOString(),
     });
-    testPost.save().catch((err) => console.log(err));
+
+    return post
+      .save()
+      .then(() => {
+        this.logger.log(
+          "info",
+          [
+            new Date().toISOString(),
+            `A post with id ${postData._id} has been submitted.`,
+          ],
+          {},
+          ": ",
+        );
+
+        return true;
+      })
+      .catch((err) => {
+        this.logger.log(
+          "warn",
+          [
+            new Date().toISOString(),
+            `A post with id ${postData._id} couldn't be submitted.`,
+          ],
+          { err },
+          ": ",
+        );
+
+        return false;
+      });
   }
 }
 

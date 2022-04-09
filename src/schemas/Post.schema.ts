@@ -6,6 +6,9 @@ export type PostDocument = Post & Document;
 @Schema()
 export class Post {
   @Prop({ required: true })
+  _id: string;
+
+  @Prop({ required: true })
   header: string;
 
   @Prop({ required: true })
