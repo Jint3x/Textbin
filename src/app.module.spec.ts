@@ -29,7 +29,7 @@ class QueueProvider {
   }
 }
 
-describe("Tests AppController", () => {
+describe("Tests posting a post", () => {
   let appController: AppController;
 
   beforeEach(async () => {
@@ -40,11 +40,6 @@ describe("Tests AppController", () => {
     );
   });
 
-  it("Assures that the correct response has been returned", () => {
-    const response = appController.data();
-
-    expect(response).toBe("Hey there!");
-  });
 
   it("Provides wrong header information when creating a post", async () => {
     const ip = "23.23.23.23";
@@ -100,6 +95,7 @@ describe("Tests AppController", () => {
     expect(ans.message).toBe("You've submitted a post");
     expect(ans.postId.length).toBe(8);
   });
+
 
   it("Provides wrong text information when submitting a post", async () => {
     const ip = "23.23.23.23";
@@ -160,6 +156,7 @@ describe("Tests AppController", () => {
     expect(ans.postId.length).toBe(8);
   });
 
+
   it("Provides wrong tags information when submitting a post", async () => {
     const ip = "23.23.23.23";
     const header = "header";
@@ -211,3 +208,88 @@ describe("Tests AppController", () => {
     expect(ans.postId.length).toBe(8);
   });
 });
+
+
+describe("Tests getting a post", () => {
+  let appController: AppController;
+  const ip = "0.0.0.0";
+  const header = "example header";
+  const text = "this is some text";
+  const tags = [];
+  const date = new Date();
+
+
+  
+  @Injectable()
+  class PostProvider {
+    getPost(id) {
+      if (id === "00000000") {
+        return;
+      } else if (id === "11111111") {
+        return false;
+      } else {
+        return {
+          _id: id, 
+          header,
+          text,
+          tags,
+          submittedOn: date
+        }
+      };
+    }
+  }
+
+  beforeEach(async () => {
+    appController = new AppController(
+      new LoggerProvider() as any,
+      new PostProvider() as any,
+      new QueueProvider() as any,
+    );
+  })
+
+
+  it("Fetches a document", async () => {
+    const id = "idtouse1";
+    const document = await appController.getPost(ip, id);
+
+    expect(document._id).toBe(id);
+    expect(document.header).toBe(header);
+    expect(document.text).toBe(text);
+    expect(document.tags).toBe(tags);
+    expect(document.submittedOn).toBe(date)
+  })
+
+
+  it("Provides non-existent ID", async () => {
+    const id = "11111111";
+
+    try {
+      await appController.getPost(ip, id);
+      expect(false).toBe(true) // If no error was generated, the test failed
+    } catch (err) {
+      expect(err).toEqual(
+        new HttpException({
+          errCode: 404,
+          reason: "A post with this ID was not found"
+        }, 404)
+      );
+    };
+  })
+
+
+  it("Provides non-existent ID", async () => {
+    const id = "00000000";
+
+    try {
+      await appController.getPost(ip, id);
+      expect(false).toBe(true) // If no error was generated, the test failed
+    } catch (err) {
+      expect(err).toEqual(
+        new HttpException({
+          errCode: 500,
+          reason: "An unexpected error occured when trying to find a document with the provided id"
+        }, 500)
+      );
+    };
+  })
+})

@@ -46,6 +46,10 @@ interface PostData_I {
   tags: string[];
 }
 
+interface FetchPost_I extends PostData_I {
+  submittedOn: Date
+}
+
 @Injectable()
 export class PostProvider {
   constructor(
@@ -91,6 +95,30 @@ export class PostProvider {
         return false;
       });
   }
+
+  async getPost(id: string): Promise<FetchPost_I | undefined | false> {
+    try {
+      const post = await this.postModel.findOne({ _id: id });
+      if (!post) return false;
+
+      return {
+        _id: post._id, 
+        header: post.header,
+        text: post.text,
+        tags: post.tags,
+        submittedOn: post.submittedOn
+      }
+    } catch(err) {
+      this.logger.log(
+        "error",
+        [new Date().toISOString(), "User tried finding a document with id ${id}, but got an error"],
+        { err: err },
+        ": "
+      )
+
+      return;
+    }
+  }
 }
 
 @Injectable()
@@ -104,4 +132,4 @@ export class QueueProvider {
   }
 }
 
-export { LogType, MetaData };
+export { LogType, MetaData, FetchPost_I };

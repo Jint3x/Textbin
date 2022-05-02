@@ -8,8 +8,10 @@ import {
   Headers,
   HttpStatus,
   HttpCode,
+  Query,
+  Param,
 } from "@nestjs/common";
-import { LoggerProvider, PostProvider, QueueProvider } from "./app.provider";
+import { LoggerProvider, PostProvider, QueueProvider, FetchPost_I } from "./app.provider";
 import generateID from "./misc/TagGenerator";
 
 @Controller("/api")
@@ -21,9 +23,52 @@ export class AppController {
   ) {}
 
   @Get("/")
-  data() {
-    this.logger.log("info", ["User .... visited", "add", "1111"]);
-    return "Hey there!";
+  @HttpCode(HttpStatus.OK)
+  @Header("Content-Type", "application/json")
+  async getPost(@Headers("X-Forwarded-For") ip: string, @Query("id") id?: string): Promise<FetchPost_I> {
+    if (typeof id !== "string" || id.length !== 8) {
+      this.logger.log(
+        "info",
+        [new Date().toISOString(), `User tried accessing a document with id ${id} which is not a valid token`],
+        { userIp: ip },
+        ": "
+      )
+
+      throw new HttpException({
+        errCode: 400,
+        reason: "An invalid id was provided"
+      }, 400)
+    }
+
+    const document = await this.database.getPost(id);
+
+    if (document === false) {
+      this.logger.log(
+        "info",
+        [new Date().toISOString(), `A user tried fetching document with id ${id} but such document doesn't exist`],
+        { userId: ip },
+        ": "
+      );
+
+      throw new HttpException({
+        errCode: 404,
+        reason: "A post with this ID was not found"
+      }, 404);
+    } else if (!document) {
+      throw new HttpException({
+        errCode: 500,
+        reason: "An unexpected error occured when trying to find a document with the provided id"
+      }, 500);
+    }
+
+    this.logger.log(
+      "info",
+      [new Date().toISOString(), `A user has fetched a document with id ${id}`],
+      { userId: ip },
+      ": "
+    );
+
+    return document;
   }
 
   @Post("/")
@@ -41,7 +86,7 @@ export class AppController {
         "info",
         [
           new Date().toISOString(),
-          "Member tried to upload text with a too small or big header",
+          "User tried to upload text with a too small or big header",
         ],
         { userIp: ip },
         ": ",
@@ -61,7 +106,7 @@ export class AppController {
         "info",
         [
           new Date().toISOString(),
-          "Member tried to upload text with a too small or too big amount of text",
+          "User tried to upload text with a too small or too big amount of text",
         ],
         { userIp: ip },
       );
@@ -83,7 +128,7 @@ export class AppController {
         "info",
         [
           new Date().toISOString(),
-          "Member tried to upload text with a tag that was bigger than the allowed amount or used more than 10 tags",
+          "User tried to upload text with a tag that was bigger than the allowed amount or used more than 10 tags",
         ],
         { userIp: ip },
       );
@@ -117,7 +162,7 @@ export class AppController {
         "info",
         [
           new Date().toISOString(),
-          `A member uploaded a document with id ${id}`,
+          `A user uploaded a document with id ${id}`,
         ],
         { userIp: ip },
       );
